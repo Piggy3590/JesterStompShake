@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using System;
@@ -24,6 +24,8 @@ namespace JesterStompShake
 
         internal ManualLogSource mls;
 
+        public static float ShakeIntensity;
+
         void Awake()
         {
             if (Instance == null)
@@ -32,6 +34,8 @@ namespace JesterStompShake
             }
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
+
+            JesterStompShakeModBase.ShakeIntensity = (float)base.Config.Bind<int>("General", "Shake Intensity", 2, "Camera shake intensity (1-3)").Value;
 
             mls.LogInfo("Jester Stomp Shake is loaded");
 
