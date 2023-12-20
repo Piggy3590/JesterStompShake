@@ -1,4 +1,4 @@
-﻿using BepInEx.Logging;
+using BepInEx.Logging;
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -39,22 +39,23 @@ namespace JesterStompShake.Patches
             {
                 GameObject jesterEnemy = jesterComponent.gameObject;
                 float distance = Vector3.Distance(___thisPlayerBody.position, jesterEnemy.transform.position);
-                if (distance > 0 && distance < 10 && JesterStompCheck.jesterStomped)
+                if (distance > 0 && distance < 2 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
                 {
-                    Debug.Log("JesterEnemy(Clone) detected within range!");
                     HUDManager.Instance.ShakeCamera(ScreenShakeType.VeryStrong);
                     JesterStompCheck.jesterStomped = false;
                 }
-                if (distance > 10 && distance < 15 && JesterStompCheck.jesterStomped)
+                else if (distance > 2 && distance < 4 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
                 {
-                    Debug.Log("JesterEnemy(Clone) detected within range!");
                     HUDManager.Instance.ShakeCamera(ScreenShakeType.Big);
                     JesterStompCheck.jesterStomped = false;
                 }
-                if (distance > 15 && distance < 25 && JesterStompCheck.jesterStomped)
+                else if (distance > 4 && distance < 35 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
                 {
-                    Debug.Log("JesterEnemy(Clone) detected within range!");
                     HUDManager.Instance.ShakeCamera(ScreenShakeType.Small);
+                    JesterStompCheck.jesterStomped = false;
+                }
+                else
+                {
                     JesterStompCheck.jesterStomped = false;
                 }
             }
