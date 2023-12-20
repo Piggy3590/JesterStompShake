@@ -41,17 +41,22 @@ namespace JesterStompShake.Patches
                 float distance = Vector3.Distance(___thisPlayerBody.position, jesterEnemy.transform.position);
                 if (distance > 0 && distance < 2 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
                 {
-                    HUDManager.Instance.ShakeCamera(ScreenShakeType.VeryStrong);
+                    if (JesterStompShakeModBase.ShakeIntensity == 1) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Small); }
+                    else if (JesterStompShakeModBase.ShakeIntensity == 2) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
+                    else if (JesterStompShakeModBase.ShakeIntensity == 3) { HUDManager.Instance.ShakeCamera(ScreenShakeType.VeryStrong); }
                     JesterStompCheck.jesterStomped = false;
                 }
                 else if (distance > 2 && distance < 4 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
                 {
-                    HUDManager.Instance.ShakeCamera(ScreenShakeType.Big);
+                    if (JesterStompShakeModBase.ShakeIntensity == 1) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Small); }
+                    else if (JesterStompShakeModBase.ShakeIntensity == 2) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
+                    else if (JesterStompShakeModBase.ShakeIntensity == 3) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
                     JesterStompCheck.jesterStomped = false;
                 }
                 else if (distance > 4 && distance < 35 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
                 {
-                    HUDManager.Instance.ShakeCamera(ScreenShakeType.Small);
+                    if (JesterStompShakeModBase.ShakeIntensity == 2) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Small); }
+                    else if (JesterStompShakeModBase.ShakeIntensity == 3) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
                     JesterStompCheck.jesterStomped = false;
                 }
                 else
