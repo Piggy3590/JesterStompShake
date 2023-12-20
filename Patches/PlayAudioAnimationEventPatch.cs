@@ -1,4 +1,4 @@
-﻿using BepInEx.Logging;
+using BepInEx.Logging;
 using DunGen;
 using GameNetcodeStuff;
 using HarmonyLib;
@@ -26,26 +26,7 @@ namespace JesterStompShake.Patches
         [HarmonyPatch("PlayAudio2RandomClip")]
         private static void PlayAudio2RandomClip_Patch()
         {
-            //PlayAudioAnimationEvent __instance
             JesterStompCheck.jesterStomped = true;
-
-            //if (__instance.transform.parent.parent.GetComponent<JesterAI>() != null)
-            //{
-                //JesterStompCheck.jesterStomped = true;
-            //}
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch("PlayAudio1RandomClip")]
-        private static void PlayAudio1RandomClip_Patch()
-        {
-            //PlayAudioAnimationEvent __instance
-            JesterStompCheck.jesterStomped = true;
-
-            //if (__instance.transform.parent.parent.GetComponent<JesterAI>() != null)
-            //{
-            //JesterStompCheck.jesterStomped = true;
-            //}
         }
     }
 }
