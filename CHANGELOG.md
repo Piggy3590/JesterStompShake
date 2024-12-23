@@ -1,3 +1,7 @@
+# 1.0.10
+
+- edited README.md
+
 # 1.0.9
 
 - Optimization after one year
