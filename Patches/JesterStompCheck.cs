@@ -2,6 +2,6 @@
 {
     public static class JesterStompCheck
     {
-        public static bool jesterStomped = false;
+        public static bool jesterStomped;
     }
 }

@@ -16,17 +16,18 @@ using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.HID;
 using JesterStompShake.Patches;
+using BepInEx;
 
 namespace JesterStompShake.Patches
 {
-    [HarmonyPatch(typeof(PlayAudioAnimationEvent))]
-    internal class PlayAudioAnimationEventPatch
+    [HarmonyPatch(typeof(JesterAI))]
+    internal class JesterAIPatch
     {
-        [HarmonyPrefix]
-        [HarmonyPatch("PlayAudio2RandomClip")]
-        private static void PlayAudio2RandomClip_Patch()
+        [HarmonyPostfix]
+        [HarmonyPatch("Start")]
+        private static void Start_Postfix(JesterAI __instance)
         {
-            JesterStompCheck.jesterStomped = true;
+            PlayerControllerBPatch.cachedJesters.Add(__instance);
         }
     }
 }

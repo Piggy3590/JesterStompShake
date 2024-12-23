@@ -16,17 +16,22 @@ using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.HID;
 using JesterStompShake.Patches;
+using BepInEx;
 
 namespace JesterStompShake.Patches
 {
-    [HarmonyPatch(typeof(PlayAudioAnimationEvent))]
-    internal class PlayAudioAnimationEventPatch
+    [HarmonyPatch(typeof(EnemyAI))]
+    internal class EnemyAIPatch
     {
-        [HarmonyPrefix]
-        [HarmonyPatch("PlayAudio2RandomClip")]
-        private static void PlayAudio2RandomClip_Patch()
+        [HarmonyPostfix]
+        [HarmonyPatch("OnDestroy")]
+        private static void OnDestroy_Postfix(EnemyAI __instance)
         {
-            JesterStompCheck.jesterStomped = true;
+            if (__instance is JesterAI)
+            {
+                JesterAI jesterScript = __instance.GetComponent<JesterAI>();
+                PlayerControllerBPatch.cachedJesters.Remove(jesterScript);
+            }
         }
     }
 }

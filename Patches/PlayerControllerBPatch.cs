@@ -1,69 +1,81 @@
-using BepInEx.Logging;
-using DunGen;
-using GameNetcodeStuff;
+﻿using BepInEx.Logging;
 using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.Remoting.Contexts;
-using System.Text;
-using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.HID;
-using JesterStompShake.Patches;
+using System.Collections.Generic;
+using GameNetcodeStuff;
 
 namespace JesterStompShake.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerControllerBPatch
     {
-        [HarmonyPostfix]
-        [HarmonyPatch("Start")]
-        private static void Start_Postfix()
-        {
-            JesterStompCheck.jesterStomped = false;
-        }
+        public static int shakeIntensity;
+        public static List<JesterAI> cachedJesters = new List<JesterAI>();
+        private static float updateInterval = 0.1f; // Update every 0.5 seconds
+        private static float lastUpdateTime;
+        private static float distance;
 
         [HarmonyPostfix]
         [HarmonyPatch("Update")]
-        private static void Update_Postfix(ref Transform ___thisPlayerBody)
+        private static void Update_Postfix(ref Transform ___thisPlayerBody, ref bool ___isCameraDisabled)
         {
-            JesterAI[] jesterComponents = GameObject.FindObjectsOfType<JesterAI>();
+            if (___isCameraDisabled || cachedJesters.Count == 0) return;
 
-            foreach (JesterAI jesterComponent in jesterComponents)
+            if (Time.time - lastUpdateTime > updateInterval)
             {
-                GameObject jesterEnemy = jesterComponent.gameObject;
-                float distance = Vector3.Distance(___thisPlayerBody.position, jesterEnemy.transform.position);
-                if (distance > 0 && distance < 2 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
+                foreach (JesterAI jester in cachedJesters)
                 {
-                    if (JesterStompShakeModBase.ShakeIntensity == 1) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Small); }
-                    else if (JesterStompShakeModBase.ShakeIntensity == 2) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
-                    else if (JesterStompShakeModBase.ShakeIntensity == 3) { HUDManager.Instance.ShakeCamera(ScreenShakeType.VeryStrong); }
-                    JesterStompCheck.jesterStomped = false;
-                }
-                else if (distance > 2 && distance < 4 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
-                {
-                    if (JesterStompShakeModBase.ShakeIntensity == 1) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Small); }
-                    else if (JesterStompShakeModBase.ShakeIntensity == 2) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
-                    else if (JesterStompShakeModBase.ShakeIntensity == 3) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
-                    JesterStompCheck.jesterStomped = false;
-                }
-                else if (distance > 4 && distance < 35 && JesterStompCheck.jesterStomped && jesterComponent.currentBehaviourStateIndex == 2)
-                {
-                    if (JesterStompShakeModBase.ShakeIntensity == 2) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Small); }
-                    else if (JesterStompShakeModBase.ShakeIntensity == 3) { HUDManager.Instance.ShakeCamera(ScreenShakeType.Big); }
-                    JesterStompCheck.jesterStomped = false;
-                }
-                else
-                {
-                    JesterStompCheck.jesterStomped = false;
+                    if (jester == null) continue;
+
+                    distance = Vector3.Distance(___thisPlayerBody.position, jester.transform.position);
+                    if (jester.currentBehaviourStateIndex != 2) continue;
+
                 }
             }
+            else
+            {
+                lastUpdateTime = Time.time;
+            }
+            if (JesterStompCheck.jesterStomped)
+            {
+                HandleShake(distance);
+            }
+        }
+
+        private static void HandleShake(float distance)
+        {
+            if (distance < 4)
+            {
+                Shake(ScreenShakeType.Small, ScreenShakeType.Big, ScreenShakeType.VeryStrong);
+            }
+            else if (distance < 6)
+            {
+                Shake(ScreenShakeType.Small, ScreenShakeType.Big, ScreenShakeType.Big);
+            }
+            else if (distance < 35)
+            {
+                Shake(ScreenShakeType.Small, ScreenShakeType.Small, ScreenShakeType.Small, true);
+            }
+        }
+
+        private static void Shake(ScreenShakeType small, ScreenShakeType medium, ScreenShakeType large, bool ignoreSmallOne = false)
+        {
+            switch (shakeIntensity)
+            {
+                case 1:
+                    if (!ignoreSmallOne)
+                    {
+                        HUDManager.Instance.ShakeCamera(small);
+                    }
+                    break;
+                case 2:
+                    HUDManager.Instance.ShakeCamera(medium);
+                    break;
+                case 3:
+                    HUDManager.Instance.ShakeCamera(large);
+                    break;
+            }
+            JesterStompCheck.jesterStomped = false;
         }
     }
 }
